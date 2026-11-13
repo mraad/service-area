@@ -1,0 +1,10 @@
+work/*
+!work/Adams/
+!work/Adams_s100/
+work/Adams_s100/cuda_*
+data/
+__pycache__/
+.claude/
+.venv/
+web/data/
+node_modules/

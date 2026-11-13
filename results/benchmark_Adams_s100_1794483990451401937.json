@@ -1,0 +1,75 @@
+{
+  "county": "Adams_s100",
+  "facilities": 100,
+  "edgesSha256": "bb2cf3f190bfe49a2f53877c84fefb55a61ec881f0f934478088f1da3dfebf65",
+  "breaks": [
+    1.0,
+    5.0,
+    10.0
+  ],
+  "warmup_runs": 1,
+  "samples": [
+    {
+      "sssp_s": 0.000398772768676281,
+      "reached_s": 0.007705971132963896,
+      "polygons_serial_s": 10.651481941808015
+    },
+    {
+      "sssp_s": 0.00038850586861371994,
+      "reached_s": 0.005508191883563995,
+      "polygons_serial_s": 10.650397437158972
+    },
+    {
+      "sssp_s": 0.0003924979828298092,
+      "reached_s": 0.005175556056201458,
+      "polygons_serial_s": 10.654038726817816
+    },
+    {
+      "sssp_s": 0.00038876384496688843,
+      "reached_s": 0.005138716194778681,
+      "polygons_serial_s": 10.656751550734043
+    },
+    {
+      "sssp_s": 0.00039148377254605293,
+      "reached_s": 0.005167773924767971,
+      "polygons_serial_s": 10.64447951503098
+    },
+    {
+      "sssp_s": 0.0003888658247888088,
+      "reached_s": 0.005144077353179455,
+      "polygons_serial_s": 10.646927140653133
+    },
+    {
+      "sssp_s": 0.0004177209921181202,
+      "reached_s": 0.005121905356645584,
+      "polygons_serial_s": 10.648601368069649
+    }
+  ],
+  "median": {
+    "sssp_s": 0.00039148377254605293,
+    "reached_s": 0.005167773924767971,
+    "polygons_serial_s": 10.650397437158972
+  },
+  "windows_arcpy": {
+    "county": "Adams",
+    "edges": 5035,
+    "facilities": 100,
+    "load_s": 4.311501299962401,
+    "solve_s": 69.27448990003904,
+    "export_s": 1.1102259999606758,
+    "breaks": [
+      1,
+      5,
+      10
+    ],
+    "trim_m": 100,
+    "detail": "High",
+    "sample": 100,
+    "seed": 7,
+    "unlocated": 0,
+    "messages": [
+      "Start Time: Tuesday, November 10, 2026 11:16:45 AM",
+      "Succeeded at Tuesday, November 10, 2026 11:17:54 AM (Elapsed Time: 1 minutes 9 seconds)"
+    ]
+  }
+}

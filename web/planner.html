@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accelerated Service Area · Planner</title>
+  <!-- GEOS (WebAssembly) for the coverage polygon; the same pinned version as package.json -->
+  <script type="importmap">{ "imports": { "geos-wasm": "https://cdn.jsdelivr.net/npm/geos-wasm@3.1.1/build/package/geos.esm.js" } }</script>
+  <script type="module" src="https://js.arcgis.com/5.2.2/"></script>
+  <style>
+    html, body { height: 100%; margin: 0; font: 14px/1.4 system-ui, sans-serif; }
+    arcgis-map { height: 100%; }
+    #panel { position: absolute; top: 12px; right: 12px; background: #fff; padding: 10px 12px; width: 280px;
+             border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    #panel fieldset { border: 0; margin: 0 0 8px; padding: 0; }
+    #panel legend { font-weight: 600; margin-bottom: 2px; }
+    #panel table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; margin: 6px 0; }
+    #panel td, #panel th { padding: 1px 4px; text-align: right; }
+    #panel td:first-child, #panel th:first-child { text-align: left; }
+    #log { font-variant-numeric: tabular-nums; color: #333; white-space: pre-line; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <arcgis-map basemap="osm" center="-83.47,38.83" zoom="10">
+    <arcgis-zoom slot="top-left"></arcgis-zoom>
+  </arcgis-map>
+  <div id="panel">
+    <fieldset>
+      <legend><label for="k">Stations</label>: <output id="kOut" for="k">5</output></legend>
+      <input id="k" type="range" min="1" max="20" value="5" style="width: 100%" />
+    </fieldset>
+    <fieldset id="minutes">
+      <legend>Reach crashes within</legend>
+      <label><input type="radio" name="min" value="1" /> 1 min</label>
+      <label><input type="radio" name="min" value="5" checked /> 5 min</label>
+      <label><input type="radio" name="min" value="10" /> 10 min</label>
+    </fieldset>
+    <button id="run" disabled>Place stations</button>
+    <button id="export" disabled>Export GeoJSON</button>
+    <table id="table" hidden>
+      <tr><th>Within</th><th>Crashes</th><th>Share</th></tr>
+    </table>
+    <div id="log">Loading…</div>
+  </div>
+  <script type="module" src="planner_app.js"></script>
+</body>
+</html>

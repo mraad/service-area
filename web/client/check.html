@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Client vs server check</title>
+  <style>
+    body { margin: 8px; font: 13px/1.4 ui-monospace, monospace; background: #fff; }
+    #stage { position: relative; width: 768px; height: 768px; }
+    #stage canvas { position: absolute; left: 0; top: 0; width: 768px; height: 768px; }
+  </style>
+</head>
+<body>
+  <!-- Fidelity check without the map SDK: client raster (WebGL) against the server polygon (/sa).
+       Open through the server: http://localhost:8765/client/check.html -->
+  <pre id="out">running…</pre>
+  <div id="stage"><canvas id="gl"></canvas><canvas id="ref"></canvas></div>
+  <script type="module">
+    import { ServiceArea } from "./sa.js";
+    import { createServiceAreaLayer } from "./layer.js";
+
+    const SIZE = 2048;
+    const out = document.getElementById("out");
+    const glCanvas = document.getElementById("gl");
+    const refCanvas = document.getElementById("ref");
+    glCanvas.width = glCanvas.height = refCanvas.width = refCanvas.height = SIZE;
+    const gl = glCanvas.getContext("webgl2", { antialias: false, preserveDrawingBuffer: true });
+    const ctx = refCanvas.getContext("2d", { willReadFrequently: true });
+
+    // Minimal stand-ins for the two SDK classes that layer.js subclasses.
+    const subclass = (base) => (proto) => { class C extends base {} Object.assign(C.prototype, proto); return C; };
+    class ViewBase {
+      constructor({ layer }) { this.layer = layer; this.context = gl; }
+      bindRenderTarget() { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, SIZE, SIZE); }
+      requestRender() {}
+    }
+    class LayerBase { constructor() {} }
+    const sdk = { Layer: { createSubclass: subclass(LayerBase) }, BaseLayerViewGL2D: { createSubclass: subclass(ViewBase) } };
+
+    const R = 6378137;
+    const toLon = (x) => (x / R) * 180 / Math.PI;
+    const toLat = (y) => Math.atan(Math.sinh(y / R)) * 180 / Math.PI;
+    const toX = (lon) => (lon * Math.PI / 180) * R;
+    const toY = (lat) => Math.asinh(Math.tan(lat * Math.PI / 180)) * R;
+
+    const dilate = (a) => {  // 3x3
+      const b = new Uint8Array(a.length);
+      for (let y = 1; y < SIZE - 1; y++) for (let x = 1; x < SIZE - 1; x++) {
+        const i = y * SIZE + x;
+        b[i] = a[i] | a[i - 1] | a[i + 1] | a[i - SIZE] | a[i + SIZE] | a[i - SIZE - 1] | a[i - SIZE + 1] | a[i + SIZE - 1] | a[i + SIZE + 1];
+      }
+      return b;
+    };
+
+    try {
+      const sa = await ServiceArea.load("../data/adams");
+      const layer = createServiceAreaLayer(sdk, sa);
+      layer.fill = layer.line = [1, 1, 1, 1];
+      const view = layer.createLayerView({ type: "2d" });
+      view.attach();
+      // ?only=<crash>:<minutes> checks one case and paints the difference (red: client only, green: server only)
+      const only = new URLSearchParams(location.search).get("only")?.split(":").map(Number);
+      const all = await (await fetch("../data/fixture.json")).json();
+      const cases = only ? all.filter((c) => c.cid === only[0]) : all.slice(0, 6);
+      const lines = ["crash  min  rot  IoU     off>1px  server_px"];
+      // every case at rotation 0; the first crash also at 30 degrees (clockwise, the SDK convention)
+      const runs = (c) => (only ? [only[1]] : [1, 5, 10]).flatMap((B) => (!only && c === cases[0] ? [0, 30] : [0]).map((rot) => [B, rot]));
+      let worstIoU = 1, worstOff = 0, lastState = null;
+      for (const c of cases) {
+        for (const [B, rotation] of runs(c)) {
+          const cosR = Math.cos(rotation * Math.PI / 180), sinR = Math.sin(rotation * Math.PI / 180);
+          const f = await (await fetch(`../sa?lon=${toLon(c.mx)}&lat=${toLat(c.my)}&minutes=${B}`)).json();
+          const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
+          let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+          const rings = polys.flat().map((ring) => ring.map(([lon, lat]) => {
+            const x = toX(lon), y = toY(lat);
+            x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+            return [x, y];
+          }));
+          const center = [(x0 + x1) / 2, (y0 + y1) / 2];
+          const resolution = Math.max(x1 - x0, y1 - y0) * (rotation ? 1.5 : 1.1) / SIZE;
+
+          const s = sa.snap(c.mx, c.my);
+          sa.solve(s.edge, s.frac, B);
+          sa.flags(B);
+          layer.show(B);
+          gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+          gl.viewport(0, 0, SIZE, SIZE);
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          lastState = { center, resolution, rotation, size: [SIZE, SIZE], pixelRatio: 1 };
+          view.render({ state: lastState });
+          const px = new Uint8Array(SIZE * SIZE * 4);
+          gl.readPixels(0, 0, SIZE, SIZE, gl.RGBA, gl.UNSIGNED_BYTE, px);
+
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, SIZE, SIZE);
+          ctx.beginPath();
+          for (const ring of rings) {
+            ring.forEach(([x, y], i) => {
+              const dx = (x - center[0]) / resolution, dy = (y - center[1]) / resolution;
+              const sx = SIZE / 2 + cosR * dx + sinR * dy, sy = SIZE / 2 + sinR * dx - cosR * dy;
+              if (i) ctx.lineTo(sx, sy); else ctx.moveTo(sx, sy);
+            });
+            ctx.closePath();
+          }
+          ctx.fillStyle = "#000";
+          ctx.fill("evenodd");
+          const ref = ctx.getImageData(0, 0, SIZE, SIZE).data;
+          const A = new Uint8Array(SIZE * SIZE), Bm = new Uint8Array(SIZE * SIZE);
+          for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) {
+            A[y * SIZE + x] = px[((SIZE - 1 - y) * SIZE + x) * 4 + 3] > 127 ? 1 : 0;  // readPixels starts at the bottom row
+            Bm[y * SIZE + x] = ref[(y * SIZE + x) * 4 + 3] > 127 ? 1 : 0;
+          }
+          const dA = dilate(A), dB = dilate(Bm);
+          let inter = 0, union = 0, off = 0, nB = 0;
+          for (let i = 0; i < A.length; i++) {
+            inter += A[i] & Bm[i]; union += A[i] | Bm[i]; nB += Bm[i];
+            off += (A[i] & ~dB[i] & 1) + (Bm[i] & ~dA[i] & 1);  // differs by more than one pixel
+          }
+          const iou = inter / union;
+          worstIoU = Math.min(worstIoU, iou); worstOff = Math.max(worstOff, off);
+          lines.push(`${String(c.cid).padEnd(6)} ${String(B).padEnd(4)} ${String(rotation).padEnd(4)} ${iou.toFixed(4)}  ${String(off).padEnd(8)} ${nB}`);
+          // leave the last case on screen: client raster in blue, server outline in orange
+          ctx.clearRect(0, 0, SIZE, SIZE);
+          if (only) {
+            const img = ctx.createImageData(SIZE, SIZE);
+            for (let i = 0; i < A.length; i++) {
+              if (A[i] && !dB[i]) img.data.set([255, 0, 0, 255], i * 4);
+              else if (Bm[i] && !dA[i]) img.data.set([0, 160, 0, 255], i * 4);
+            }
+            ctx.putImageData(img, 0, 0);
+          }
+          ctx.lineWidth = 2; ctx.strokeStyle = "#eb6834"; ctx.stroke();
+        }
+      }
+      layer.fill = [0, 110 / 255, 200 / 255, 0.35]; layer.line = [0, 80 / 255, 160 / 255, 0.9];
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      view.render({ state: lastState });
+      lines.push(`worst IoU ${worstIoU.toFixed(4)}, worst pixels off by more than 1 px: ${worstOff}`);
+      out.textContent = lines.join("\n");
+      if (!cases.length || !Number.isFinite(worstIoU) || worstIoU < 0.99) throw new Error(`Pixel parity FAIL: IoU ${worstIoU}, required 0.99`);
+      document.title = "PASS";
+    } catch (err) {
+      out.textContent = `ERROR ${err.stack || err}`;
+      document.title = "ERROR";
+    }
+  </script>
+</body>
+</html>

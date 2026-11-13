@@ -1,0 +1,9 @@
+{
+  "name": "service-area-client-tests",
+  "private": true,
+  "type": "module",
+  "description": "Node tests for the browser engine (web/client). geos-wasm is used by tests/test_client_geom.mjs only.",
+  "devDependencies": {
+    "geos-wasm": "3.1.1"
+  }
+}

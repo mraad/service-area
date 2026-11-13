@@ -1,0 +1,22 @@
+{
+ "county": "Adams",
+ "edges": 5035,
+ "facilities": 100,
+ "load_s": 4.311501299962401,
+ "solve_s": 69.27448990003904,
+ "export_s": 1.1102259999606758,
+ "breaks": [
+  1,
+  5,
+  10
+ ],
+ "trim_m": 100,
+ "detail": "High",
+ "sample": 100,
+ "seed": 7,
+ "unlocated": 0,
+ "messages": [
+  "Start Time: Tuesday, November 10, 2026 11:16:45 AM",
+  "Succeeded at Tuesday, November 10, 2026 11:17:54 AM (Elapsed Time: 1 minutes 9 seconds)"
+ ]
+}

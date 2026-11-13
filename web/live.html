@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accelerated Service Area · Live</title>
+  <!-- GEOS (WebAssembly) builds the polygon; the same pinned version as package.json -->
+  <script type="importmap">{ "imports": { "geos-wasm": "https://cdn.jsdelivr.net/npm/geos-wasm@3.1.1/build/package/geos.esm.js" } }</script>
+  <script type="module" src="https://js.arcgis.com/5.2.2/"></script>
+  <style>
+    html, body { height: 100%; margin: 0; font: 14px/1.4 system-ui, sans-serif; }
+    arcgis-map { height: 100%; }
+    #panel { position: absolute; top: 12px; right: 12px; background: #fff; padding: 10px 12px; width: 270px;
+             border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    #panel fieldset { border: 0; margin: 0 0 8px; padding: 0; }
+    #panel legend { font-weight: 600; margin-bottom: 2px; }
+    #hud { font-variant-numeric: tabular-nums; color: #333; white-space: pre-line; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <arcgis-map basemap="osm" center="-83.47,38.83" zoom="11">
+    <arcgis-zoom slot="top-left"></arcgis-zoom>
+  </arcgis-map>
+  <div id="panel">
+    <fieldset id="minutes">
+      <legend>Drive time</legend>
+      <label><input type="radio" name="min" value="1" /> 1 min</label>
+      <label><input type="radio" name="min" value="5" checked /> 5 min</label>
+      <label><input type="radio" name="min" value="10" /> 10 min</label>
+    </fieldset>
+    <fieldset id="mode">
+      <legend>Trigger</legend>
+      <label><input type="radio" name="mode" value="click" checked /> Click</label>
+      <label><input type="radio" name="mode" value="hover" /> Hover</label>
+    </fieldset>
+    <div id="hud" role="status" aria-live="polite">Loading…</div>
+  </div>
+  <script type="module" src="live_app.js"></script>
+</body>
+</html>

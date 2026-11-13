@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WebGPU bench</title>
+  <style>body { margin: 8px; font: 13px/1.4 ui-monospace, monospace; background: #fff; color: #111; }</style>
+</head>
+<body>
+  <!-- WebGPU fp32 shortest paths (web/client/gpu.js) against the CUDA fixture and the JS engine.
+       Open through any static server that serves web/: http://localhost:8765/client/bench_gpu.html -->
+  <pre id="out">running…</pre>
+  <script type="module">
+    import { ServiceArea } from "./sa.js";
+    import { GpuSssp } from "./gpu.js";
+
+    const out = document.getElementById("out");
+    const log = (s) => { out.textContent += "\n" + s; };
+    const pct = (a, q) => { const b = [...a].sort((x, y) => x - y); return b[Math.min(b.length - 1, Math.floor(q * b.length))]; };
+    const on = (flags, n) => { const r = []; for (let i = 0; i < n; i++) if (flags[i] === 1 || flags[i] === 255) r.push(i); return r; };
+    const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+    const CUTOFF = 10;
+
+    try {
+      out.textContent = "";
+      const [sa, cases] = await Promise.all([ServiceArea.load("../data/adams"),
+        fetch("../data/fixture.json").then((r) => r.json())]);
+      const gpu = await GpuSssp.create(sa, cases.length);
+      log(`adapter: ${gpu.info.vendor ?? "?"} ${gpu.info.architecture ?? ""} ${gpu.info.description ?? ""}`.trim());
+      log(`network: ${sa.N} nodes, ${sa.E} edges; ${cases.length} sources; cutoff ${CUTOFF} min`);
+      const seed = (c) => ({ u: sa.eu[c.edge], v: sa.ev[c.edge], cu: c.frac * sa.w[c.edge], cv: (1 - c.frac) * sa.w[c.edge] });
+
+      // fidelity: one batch with every source, then compare with the CUDA (fp64) fixture
+      const d = await gpu.run(cases.map(seed), CUTOFF);
+      let maxErr = 0, over = 0, reached = 0, reachDiff = 0, flagCases = 0, flagEdges = 0;
+      cases.forEach((c, s) => {
+        for (let n = 0; n < sa.N; n++) {
+          const g = d[s * sa.N + n], want = c.dist[n];
+          if (want === null || g === Infinity) { if ((want === null) !== (g === Infinity)) reachDiff++; continue; }
+          reached++;
+          const e = Math.abs(g - want);
+          if (e > maxErr) maxErr = e;
+          if (e > 1e-6) over++;
+        }
+        for (const [B, want] of Object.entries(c.breaks)) {
+          sa.setDist(d, s * sa.N, c.edge, c.frac);
+          sa.flags(Number(B));
+          const full = on(sa.full, sa.E);
+          const ok = same(full, want.full) && same(on(sa.nodeFlags, sa.N), want.disk) && same(on(sa.faceFlags, sa.F), want.faces);
+          if (!ok) { flagCases++; flagEdges += full.filter((e) => !want.full.includes(e)).length + want.full.filter((e) => !full.includes(e)).length; }
+        }
+      });
+      log(`fp32 cost error: max ${maxErr.toExponential(2)} min; ${over} of ${reached} reached nodes over the 1e-6 gate (${(100 * over / reached).toFixed(2)}%)`);
+      log(`reach differences (reached in one, not the other): ${reachDiff}`);
+      log(`polygon parts (full edges, disks, faces) different from Builder.classify: ${flagCases} of ${cases.length * 3} crash-breaks, ${flagEdges} full-edge differences`);
+
+      // speed: one source per dispatch (an interactive click), including the readback
+      for (let i = 0; i < 10; i++) await gpu.run([seed(cases[i])], CUTOFF);
+      const one = [];
+      for (const c of cases) { const t = performance.now(); await gpu.run([seed(c)], CUTOFF); one.push(performance.now() - t); }
+      log(`WebGPU 1 source + readback: p50 ${pct(one, 0.5).toFixed(2)} ms, p95 ${pct(one, 0.95).toFixed(2)} ms`);
+      const batch = [];
+      for (let i = 0; i < 7; i++) { const t = performance.now(); await gpu.run(cases.map(seed), CUTOFF); batch.push(performance.now() - t); }
+      log(`WebGPU ${cases.length} sources in one dispatch + readback: p50 ${pct(batch, 0.5).toFixed(2)} ms`);
+      const js = [];
+      for (let p = 0; p < 3; p++) for (const c of cases) { const t = performance.now(); sa.solve(c.edge, c.frac, CUTOFF); js.push(performance.now() - t); }
+      log(`JS Float64 Dijkstra, 1 source: p50 ${pct(js, 0.5).toFixed(3)} ms; ${cases.length} sources: ${(js.reduce((a, b) => a + b, 0) / 3).toFixed(2)} ms`);
+      log("DONE");
+    } catch (err) {
+      log(`ERROR ${err.message}`);
+      console.error(err);
+    }
+    document.title = "finished";
+  </script>
+</body>
+</html>

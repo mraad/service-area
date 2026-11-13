@@ -1,0 +1,4 @@
+- Substituted a GDAL-extracted subset gdb for the user's named source (OhioTGN.gdb) to save copy time; rule: use the exact named source dataset, and ask before substituting a derived copy.
+- Preserve timing metrics for both Windows ArcPy and CUDA runs alongside parity results. Compare matching inputs and settings; fidelity remains the first priority.
+- `rsync ... $h:service-area/` in zsh copied locally into `gpu-x86a/`, `gpu-arma/` (`:s` is a zsh modifier), so remotes were not updated and a check ran on old files; rule: write `"${h}:path"` and confirm remote content after a sync.
+- Chained a shell check (`grep -c ... &&`) before an edit script; the check exited 1, the edit never ran, and a parity run measured old code; rule: run edits unconditionally and confirm the changed text (or file hash) before any run that depends on it.
