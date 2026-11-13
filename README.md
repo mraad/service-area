@@ -455,6 +455,7 @@ If it does not, the sign-in fails.
   <tr><td><code>cuda/server.py</code></td><td>Live FastAPI server.</td></tr>
   <tr><td><code>parity/compare.py</code></td><td>Parity gates and report.</td></tr>
   <tr><td><code>parity/latency.py</code></td><td>Server time benchmark.</td></tr>
+  <tr><td><code>parity/benchmark.py</code></td><td>Warm repeated CUDA stage timings on the same facilities (8.3).</td></tr>
   <tr><td><code>tests/</code></td><td>GPU shortest path against Dijkstra, interval math, parity checker.</td></tr>
   <tr><td><code>web/</code></td><td>Web map (HTML and JavaScript).</td></tr>
   <tr><td><code>web/client/sa.js</code></td><td>Client engine: snap, shortest path, polygon-part flags. No SDK imports.</td></tr>
@@ -462,6 +463,8 @@ If it does not, the sign-in fails.
   <tr><td><code>web/client/check.html</code></td><td>Pixel comparison of the client raster and the server polygon.</td></tr>
   <tr><td><code>client/build_client_data.py</code></td><td>Builds <code>web/data/</code> (graph, snap geometry, mesh, test fixture).</td></tr>
   <tr><td><code>tests/test_client.mjs</code></td><td>Node test: client engine against the CUDA engine.</td></tr>
+  <tr><td><code>tests/test_client_arcpy.mjs</code></td><td>Node test: client lines against the ArcPy lines (14.4).</td></tr>
+  <tr><td><code>tests/test_app.mjs</code></td><td>Node test: URL parameters of the web map (14.6), without the map SDK.</td></tr>
   <tr><td><code>web/client/gpu.js</code>, <code>web/client/geom.js</code></td><td>WebGPU shortest paths (fp32) and GEOS polygons (WebAssembly).</td></tr>
   <tr><td><code>web/client/planner.js</code>, <code>web/planner.html</code></td><td>Station planner (section 16).</td></tr>
   <tr><td><code>web/live.html</code></td><td>Live service area with WebGPU and GEOS (section 17).</td></tr>
@@ -580,7 +583,7 @@ Open <code>http://localhost:8765/planner.html</code>.
 </p>
 <p align="center">
   <img src="docs/images/planner.png" width="600" alt="Map of Adams County with 5 stations, crashes reached in 5 minutes in blue, other crashes in red.">
-  <br><em>Figure 8. Five stations, 5 minutes: 1,228 of 2,483 crashes (49.5%) are reached.</em>
+  <br><em>Figure 9. Five stations, 5 minutes: 1,228 of 2,483 crashes (49.5%) are reached.</em>
 </p>
 <ol>
   <li>The page snaps all crashes to the streets. Each crash site is a candidate station.</li>
@@ -611,7 +614,7 @@ The service area follows the point.
 </p>
 <p align="center">
   <img src="docs/images/live_hover.gif" width="640" alt="Animation: hover along a street near West Union, 5-minute service area.">
-  <br><em>Figure 9. Hover along one street segment (2.5 km, near West Union), 5 minutes. 28 positions: each WebGPU solve takes approximately 1 ms and each GEOS polygon approximately 30 ms.</em>
+  <br><em>Figure 10. Hover along one street segment (2.5 km, near West Union), 5 minutes. 28 positions: each WebGPU solve takes approximately 1 ms and each GEOS polygon approximately 30 ms.</em>
 </p>
 <ol>
   <li>WebGPU calculates the shortest paths (fp32). If the browser has no WebGPU, the page uses the JavaScript solver.</li>
@@ -639,7 +642,7 @@ The full comparison is in <code>results/gpu-arm.md</code>.
   <tr><td>Batch output (Adams_s100)</td><td>Equal to gpu-x86 bit for bit: 97,363 reached rows and 300 polygons.</td></tr>
   <tr><td>Parity gates</td><td>Same as gpu-x86: 0 cost mismatches, 1 known interval mismatch, 299 of 300 polygons.</td></tr>
   <tr><td>Polygons, one CPU process</td><td>8.26 s (gpu-x86: 14.69 s).</td></tr>
-  <tr><td>Live server p50</td><td>2.0 ms, 16.4 ms, 50.1 ms for 1, 5, 10 min (gpu-x86: 3.7 ms, 21.4 ms, 67.6 ms).</td></tr>
+  <tr><td>Live server p50</td><td>2.0 ms, 16.4 ms, 50.1 ms for 1, 5, 10 min (gpu-x86, same-session run: 3.7 ms, 21.4 ms, 67.6 ms).</td></tr>
 </table>
 <p>Set up gpu-arm:</p>
 <ol>
