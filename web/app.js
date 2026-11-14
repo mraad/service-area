@@ -119,23 +119,25 @@ async function solveServer(point) {
   }
   const ctrl = new AbortController();
   inFlight = ctrl;
-  const t0 = performance.now();
   try {
     const url = `sa?lon=${point.longitude.toFixed(6)}&lat=${point.latitude.toFixed(6)}&minutes=${minutes()}`;
     const res = await fetch(url, { signal: ctrl.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const f = await res.json();
+    if (inFlight !== ctrl) return;
     area.geometry = toPolygon(f.geometry);
     hudText.server = `server ${f.properties.solve_ms.toFixed(1)} ms`;
   } catch (err) {
-    if (err.name !== "AbortError") { area.geometry = null; hudText.server = `Error: ${err.message}`; }  // no stale polygon
+    if (inFlight === ctrl && err.name !== "AbortError") { area.geometry = null; hudText.server = `Error: ${err.message}`; }  // no stale polygon
   } finally {
-    showHud();
-    if (inFlight === ctrl) inFlight = null;
-    if (pending) {
-      const next = pending;
-      pending = null;
-      solveServer(next);
+    if (inFlight === ctrl) {
+      inFlight = null;
+      showHud();
+      if (pending) {
+        const next = pending;
+        pending = null;
+        solveServer(next);
+      }
     }
   }
 }
