@@ -1,5 +1,12 @@
 # CUDA service areas — todo
 
+## Review and optimization — 2026-11-14
+
+- Branch `optimize/simplify-service-area`: fixed superseded server-request results/queue handling; planner greedy skips candidates whose previous gain cannot beat the current winner; removed the unused request timer.
+- Node checks pass: `tests/test_app.mjs` and fixture-free `tests/test_greedy.mjs` (512 reference comparisons). Synthetic planner benchmark: 1.62x local coverage, 1.13x overlapping, no material change for dense coverage; picks and gains unchanged.
+- Remote/fixture validation unavailable (`gpu-x86` does not resolve; local `web/data/` absent). Manual final review; CodeRabbit authentication callback failed. Scope, evidence and limits: `results/codebase_review_20261114.md`.
+- Shipping follow-up: retrieved fixtures from `gc5`; client engine (100 crashes), geometry (300/300 polygons), planner, app and greedy tests pass. Direct ArcPy gate retains the known crash 1800 / 5-minute interval mismatch (0 cost mismatches, 1 interval mismatch). User explicitly authorized deferring that residual and shipping; tolerances and gates remain unchanged. Revisit with a fresh Windows ArcPy solve and line-band inspection.
+
 ## Deferred investigation (user request)
 
 - Finding 2026-11-12: the unsplit crossings come from the ArcGIS line output, not from CUDA (costs equal within 1e-6 min at both line ends; source geometry has 0 OGC problems; Franklin pilot shows 2 more). Why ArcGIS does not split is still unknown. README 8.4 has the note.

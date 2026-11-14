@@ -64,12 +64,15 @@ export function greedy(costs, S, B, k) {
   for (let s = 0; s < S; s++) {
     for (let i = 0; i < S; i++) if (costs[s * S + i] <= B) bits[s * words + (i >>> 5)] |= 1 << (i & 31);
   }
-  const picked = [], gains = [];
+  const picked = [], gains = [], bound = new Uint32Array(S).fill(S);
   for (let step = 0; step < k; step++) {
     let best = -1, bestGain = 0;
     for (let s = 0; s < S; s++) {
+      // Coverage only grows: an earlier gain is an upper bound on this station's next gain.
+      if (bound[s] <= bestGain) continue;
       let g = 0;
       for (let j = 0; j < words; j++) g += popcount(bits[s * words + j] & ~covered[j]);
+      bound[s] = g;
       if (g > bestGain) { bestGain = g; best = s; }
     }
     if (best < 0) break;
