@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="440" viewBox="0 0 720 440" role="img" aria-labelledby="title desc">
+  <title id="title">Edge 3249 before and after the 5-minute cutoff split</title>
+  <desc id="desc">The original ArcGIS line crosses 5 minutes without a split. CUDA reaches almost all of the edge. The experiment adds a junction at the cutoff. ArcGIS then reports the long child edge below 5 minutes and a separate tail above 5 minutes. The tail is exaggerated and the drawing is not to scale.</desc>
+  <rect width="720" height="440" fill="#fff"/>
+  <g font-family="Arial, sans-serif" fill="#252525">
+    <text x="30" y="30" font-size="19" font-weight="bold">One street crosses the 5-minute limit</text>
+    <text x="30" y="53" font-size="13">Crash 1800 · positions follow the digitized street direction</text>
+    <text x="30" y="88" font-size="15" font-weight="bold">Original network</text>
+    <text x="30" y="115" font-size="13">ArcGIS line</text>
+    <path d="M155 111 H675" stroke="#eb6834" stroke-width="8"/>
+    <text x="155" y="139" font-size="12">One line enters the next break band.</text>
+    <text x="30" y="171" font-size="13">CUDA interval</text>
+    <path d="M155 167 H540" stroke="#2a78d6" stroke-width="8"/>
+    <path d="M540 167 H675" stroke="#8b8b88" stroke-width="3" stroke-dasharray="5 5"/>
+    <circle cx="155" cy="167" r="5" fill="#252525"/>
+    <circle cx="540" cy="167" r="5" fill="#252525"/>
+    <circle cx="675" cy="167" r="5" fill="#252525"/>
+    <text x="155" y="191" font-size="12">Position 0</text>
+    <text x="440" y="191" font-size="12">0.9999775911</text>
+    <text x="615" y="191" font-size="12">Position 1</text>
+    <path d="M30 212 H690" stroke="#d9d8d4"/>
+    <text x="30" y="242" font-size="15" font-weight="bold">Isolated split network</text>
+    <text x="155" y="270" font-size="13" fill="#2a78d6">Long child: EID 3249</text>
+    <text x="549" y="270" font-size="13" fill="#b84418">Tail: EID 7337</text>
+    <path d="M155 289 H540" stroke="#2a78d6" stroke-width="8"/>
+    <path d="M540 289 H675" stroke="#eb6834" stroke-width="8"/>
+    <circle cx="155" cy="289" r="5" fill="#252525"/>
+    <circle cx="540" cy="289" r="7" fill="#fff" stroke="#252525" stroke-width="2"/>
+    <circle cx="675" cy="289" r="5" fill="#252525"/>
+    <text x="155" y="316" font-size="12">3.5492812 min</text>
+    <text x="455" y="316" font-size="12">5.0000000 min*</text>
+    <text x="602" y="337" font-size="12">5.0000325 min</text>
+    <text x="155" y="350" font-size="13">Length: 3,829.89745 ft</text>
+    <text x="549" y="370" font-size="13">Length: 0.08598 ft</text>
+    <text x="30" y="404" font-size="12">* Stored arrival cost: 4.999999999999991 min. The tail is exaggerated.</text>
+    <text x="30" y="424" font-size="12">Schematic only. Not to scale. Blue = reached at 5 min; orange = extends beyond 5 min.</text>
+  </g>
+</svg>
