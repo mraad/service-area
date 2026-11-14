@@ -1,10 +1,12 @@
 {
- "county": "Adams",
- "edges": 5035,
+ "county": "Adams_exports_20261114T130702Z",
+ "edges": 5036,
  "facilities": 100,
- "load_s": 4.311501299962401,
- "solve_s": 69.27448990003904,
- "export_s": 1.1102259999606758,
+ "load_s": 4.3865024000406265,
+ "solve_s": 68.1789271000307,
+ "export_s": 1.1207334001082927,
+ "batch": 0,
+ "groups": 1,
  "breaks": [
   1,
   5,
@@ -16,7 +18,7 @@
  "seed": 7,
  "unlocated": 0,
  "messages": [
-  "Start Time: Tuesday, November 10, 2026 11:16:45 AM",
-  "Succeeded at Tuesday, November 10, 2026 11:17:54 AM (Elapsed Time: 1 minutes 9 seconds)"
+  "Start Time: Saturday, November 14, 2026 5:07:12 AM",
+  "Succeeded at Saturday, November 14, 2026 5:08:20 AM (Elapsed Time: 1 minutes 7 seconds)"
  ]
 }

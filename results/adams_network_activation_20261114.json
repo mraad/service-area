@@ -1,0 +1,108 @@
+[
+  {
+    "host": "mraadmlwin",
+    "stamp": "20261114T130021Z",
+    "status": "complete",
+    "target": "C:\\Users\\mraad\\service-area\\work\\Adams.gdb",
+    "backup_root": "C:\\Users\\mraad\\service-area\\work\\keep\\network_promotion_20261114T130021Z",
+    "backups": [
+      {
+        "original": "C:\\Users\\mraad\\service-area\\work\\Adams.gdb",
+        "backup": "C:\\Users\\mraad\\service-area\\work\\keep\\network_promotion_20261114T130021Z\\Adams.gdb",
+        "files": 117
+      }
+    ],
+    "installed_snapshot": {
+      "edges": 5036,
+      "crashes": 2483,
+      "streets_sha256": "856f413145387ded41e363d3da879ebd7be9bb2750256fc102f1dca1984070c1",
+      "crashes_sha256": "2665ca346a70a4c60988fea6b61ee0695757670f0947133001e33d5595cfa9c4"
+    },
+    "installed_validation": {
+      "facility": 1800,
+      "breaks": [
+        1,
+        5,
+        10
+      ],
+      "crossing_lines": [
+        {
+          "SourceOID": 3249,
+          "FromPosition": 0,
+          "ToPosition": 1,
+          "FromCumul_Minutes": 3.5492812118132644,
+          "ToCumul_Minutes": 4.999999999999991
+        },
+        {
+          "SourceOID": 7337,
+          "FromPosition": 0,
+          "ToPosition": 1,
+          "FromCumul_Minutes": 4.999999999999991,
+          "ToCumul_Minutes": 5.000032509772196
+        }
+      ],
+      "cutoff_check": "PASS"
+    },
+    "original_snapshot": {
+      "edges": 5035,
+      "crashes": 2483,
+      "streets_sha256": "2bce3b9dfb2e078ce5e4e8ad6b620458bfc65cdc3903a8e4d0e637aa1f17ae92",
+      "crashes_sha256": "2665ca346a70a4c60988fea6b61ee0695757670f0947133001e33d5595cfa9c4"
+    },
+    "retained_original": "C:\\Users\\mraad\\service-area\\work\\keep\\network_promotion_20261114T130021Z\\Adams_original_retained.gdb",
+    "derived_exports": "Not promoted; existing exported baseline and GPU/browser data remain separate versions."
+  },
+  {
+    "host": "Pro37",
+    "stamp": "20261114T130046Z",
+    "status": "complete",
+    "target": "C:\\Ohio\\Adams.gdb",
+    "backup_root": "C:\\Ohio\\backups\\network_promotion_20261114T130046Z",
+    "backups": [
+      {
+        "original": "C:\\Ohio\\OhioNetwork-01.gdb",
+        "backup": "C:\\Ohio\\backups\\network_promotion_20261114T130046Z\\OhioNetwork-01.gdb",
+        "files": 61
+      },
+      {
+        "original": "C:\\Ohio\\OhioNetwork-02.gdb",
+        "backup": "C:\\Ohio\\backups\\network_promotion_20261114T130046Z\\OhioNetwork-02.gdb",
+        "files": 106
+      }
+    ],
+    "installed_snapshot": {
+      "edges": 5036,
+      "crashes": 2483,
+      "streets_sha256": "856f413145387ded41e363d3da879ebd7be9bb2750256fc102f1dca1984070c1",
+      "crashes_sha256": "2665ca346a70a4c60988fea6b61ee0695757670f0947133001e33d5595cfa9c4"
+    },
+    "installed_validation": {
+      "facility": 1800,
+      "breaks": [
+        1,
+        5,
+        10
+      ],
+      "crossing_lines": [
+        {
+          "SourceOID": 3249,
+          "FromPosition": 0,
+          "ToPosition": 1,
+          "FromCumul_Minutes": 3.5492812118132644,
+          "ToCumul_Minutes": 4.999999999999991
+        },
+        {
+          "SourceOID": 7337,
+          "FromPosition": 0,
+          "ToPosition": 1,
+          "FromCumul_Minutes": 4.999999999999991,
+          "ToCumul_Minutes": 5.000032509772196
+        }
+      ],
+      "cutoff_check": "PASS"
+    },
+    "original_snapshot": null,
+    "retained_original": null,
+    "derived_exports": "Not promoted; existing exported baseline and GPU/browser data remain separate versions."
+  }
+]
