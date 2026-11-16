@@ -1,0 +1,145 @@
+{
+  "date": "2026-11-14",
+  "scope": "Live/browser data and 100-crash validation only; no full 2483-crash ArcGIS solve",
+  "edgesSha256": "a267e7351820f1942db4844b0bc001e01b40d574d466eb43e3fb1794fb040b87",
+  "edges": 5036,
+  "nodes": 4358,
+  "archive_sha256": "33757bdc65a754cfe72f9f2c7510db6f66edb0d5ecf1a20979d87085803ea75e",
+  "windows": {
+    "stamp": "20261114T130702Z",
+    "county": "Adams_exports_20261114T130702Z",
+    "keep": "C:\\Users\\mraad\\service-area\\work\\keep\\export_update_20261114T130702Z",
+    "source": "C:\\Users\\mraad\\service-area\\work\\Adams.gdb",
+    "status": "sample_complete",
+    "sample": "C:\\Users\\mraad\\service-area\\work\\Adams_exports_20261114T130702Z_s100",
+    "gdb": "C:\\Users\\mraad\\service-area\\work\\Adams_exports_20261114T130702Z.gdb",
+    "sha256": {
+      "crashes.parquet": "8a398118449146764e1bf0edd7be5dcdcc800a603bee9d0b7ce39bf738995ca5",
+      "edges.parquet": "a267e7351820f1942db4844b0bc001e01b40d574d466eb43e3fb1794fb040b87",
+      "esri_facilities.parquet": "77980a58956581226d1fda3438296f31dd16ce18a40f82e619ce8ce8b419213a",
+      "esri_lines.parquet": "08dbac78ae7d9c33442a42cb61c10291eb990583a57f101b2384b5a4f8e77232",
+      "esri_polygons.parquet": "fe8ae839116a71d01fb0c62bff1f472137f365ef4c8f54d193b4977f9ff38f42"
+    }
+  },
+  "backend_steps": [
+    {
+      "name": "batch_esri",
+      "status": 0
+    },
+    {
+      "name": "parity_esri",
+      "status": 0
+    },
+    {
+      "name": "batch_own",
+      "status": 0
+    },
+    {
+      "name": "parity_own",
+      "status": 0
+    },
+    {
+      "name": "client",
+      "status": 0
+    }
+  ],
+  "tests": [
+    {
+      "name": "test_app",
+      "status": 0
+    },
+    {
+      "name": "test_greedy",
+      "status": 0
+    },
+    {
+      "name": "test_client",
+      "status": 0
+    },
+    {
+      "name": "test_client_arcpy",
+      "status": 0
+    },
+    {
+      "name": "test_planner",
+      "status": 0
+    },
+    {
+      "name": "test_client_geom",
+      "status": 0
+    }
+  ],
+  "targets": [
+    {
+      "host": "mraadmlwin",
+      "root": "C:\\Users\\mraad\\service-area",
+      "backup": "C:\\Users\\mraad\\service-area\\work\\keep\\exports_activation_20261114T130702Z",
+      "status": "complete",
+      "previous": {
+        "work/Adams": {
+          "path": "C:\\Users\\mraad\\service-area\\work\\keep\\exports_activation_20261114T130702Z\\previous\\work\\Adams",
+          "files": 6
+        },
+        "work/Adams_s100": {
+          "path": "C:\\Users\\mraad\\service-area\\work\\keep\\exports_activation_20261114T130702Z\\previous\\work\\Adams_s100",
+          "files": 7
+        }
+      }
+    },
+    {
+      "host": "Pro37",
+      "root": "C:\\Ohio\\exports",
+      "backup": "C:\\Ohio\\backups\\exports_activation_20261114T130702Z",
+      "status": "complete",
+      "previous": {}
+    },
+    {
+      "host": "gc5",
+      "root": "/home/ubuntu/service-area",
+      "backup": "/home/ubuntu/service-area/work/keep/exports_activation_20261114T130702Z",
+      "status": "complete",
+      "previous": {
+        "work/Adams": {
+          "path": "/home/ubuntu/service-area/work/keep/exports_activation_20261114T130702Z/previous/work/Adams",
+          "files": 6
+        },
+        "work/Adams_s100": {
+          "path": "/home/ubuntu/service-area/work/keep/exports_activation_20261114T130702Z/previous/work/Adams_s100",
+          "files": 31
+        },
+        "web/data": {
+          "path": "/home/ubuntu/service-area/work/keep/exports_activation_20261114T130702Z/previous/web/data",
+          "files": 4
+        }
+      }
+    },
+    {
+      "host": "Mac",
+      "root": "/Users/mraad/GWorkspace/service-area-public",
+      "backup": "/Users/mraad/GWorkspace/service-area-public/work/keep/exports_activation_20261114T130702Z",
+      "status": "complete"
+    }
+  ],
+  "files": {
+    "work/Adams/crashes.parquet": "8a398118449146764e1bf0edd7be5dcdcc800a603bee9d0b7ce39bf738995ca5",
+    "work/Adams/edges.parquet": "a267e7351820f1942db4844b0bc001e01b40d574d466eb43e3fb1794fb040b87",
+    "work/Adams_s100/crashes.parquet": "8a398118449146764e1bf0edd7be5dcdcc800a603bee9d0b7ce39bf738995ca5",
+    "work/Adams_s100/cuda_polygons_esri.parquet": "7f1c7b4a6293ccee5e2fe95cfbbc10f5f626960ed512b96458ad47977b7e9998",
+    "work/Adams_s100/cuda_polygons_own.parquet": "7e30a24626e4aaeb76d547609856844b7d99b41adb7409cfbc207504282eccbd",
+    "work/Adams_s100/cuda_reached_esri.parquet": "75d03a361de1497e094ec6cd0a3dfb4c3642efd20b21416b1646658893255094",
+    "work/Adams_s100/cuda_reached_own.parquet": "7b3b7d277558b9ae78c318a0fa96704f49805788712aae3a7cb6f92ce7399827",
+    "work/Adams_s100/cuda_timing_esri.json": "2c4197f1658dd66ead0b9837fe68fdb66900d24ff7fbdeb752f461666d66d95b",
+    "work/Adams_s100/cuda_timing_own.json": "c7ebe4e380952bb0fb50cad35e2d28e950f4bd92adf6c85205879d725902bc07",
+    "work/Adams_s100/edges.parquet": "a267e7351820f1942db4844b0bc001e01b40d574d466eb43e3fb1794fb040b87",
+    "work/Adams_s100/esri_facilities.parquet": "77980a58956581226d1fda3438296f31dd16ce18a40f82e619ce8ce8b419213a",
+    "work/Adams_s100/esri_lines.parquet": "08dbac78ae7d9c33442a42cb61c10291eb990583a57f101b2384b5a4f8e77232",
+    "work/Adams_s100/esri_polygons.parquet": "fe8ae839116a71d01fb0c62bff1f472137f365ef4c8f54d193b4977f9ff38f42",
+    "work/Adams_s100/esri_timing.json": "93fc2733b85106a391773189b741a80fe8ce5d3c9686b3acf77a009823cd645d",
+    "web/data/adams.bin": "444295df0d2a906a19a3c7876cc0af0722120cfd369f33abe0768d049a9511b5",
+    "web/data/adams.json": "d4f139ab0d80e684d7c4f2f9d98dd06326f016f0f7cf25616d150e37ba75fd96",
+    "web/data/fixture.json": "d942c8214d0cfd85182966a8944411e8de0db3f08270c95aebe600466d51f4f1",
+    "web/data/fixture_poly.json": "572c24cede260e7974ddf43dfb6ffaa6217d421f46ac7d2d022d3fcee9b2eaac",
+    "results/parity_adams_s100_esri.md": "ad8c875188860a3b95f268e6207e099dcb591df840e3947e811fd77639898295",
+    "results/parity_adams_s100_own.md": "a2df0541c13824f7ad46ebcb0af905021f2bbb1faa9415aa9368b5078488740b"
+  }
+}

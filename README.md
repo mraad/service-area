@@ -69,25 +69,29 @@ The breaks are 1, 5, and 10 minutes.
 
 <h2 id="results">2. Results</h2>
 <p>
-The parity sample is 100 crashes (random seed 7).
-The full ArcGIS run uses all 2,483 crashes.
+The current parity sample is 100 crashes (random seed 7).
+The exported fixed network has 5,036 edges and 4,358 nodes.
+The live dataset contains all 2,483 crash sites.
+The earlier full ArcGIS solve is archived. It was not repeated for this export update.
 </p>
 <table>
   <tr><th>Check</th><th>Result</th></tr>
-  <tr><td>Cumulative minutes, CUDA vs ArcGIS lines</td><td>0 mismatches in 84,676 lines. Maximum difference: 1.8e-15 min.</td></tr>
-  <tr><td>Reached intervals, CUDA vs ArcGIS lines</td><td>1 mismatch in 97,362 interval sets. ArcGIS did not split that line at the break (see <a href="#esri-unsplit">8.4</a>).</td></tr>
-  <tr><td>Own snapping vs ArcGIS locations</td><td>Same result as above. Maximum cost difference: 5.2e-11 min.</td></tr>
-  <tr><td>Polygon gate (shared builder)</td><td>299 of 300 pass. The one failure is the same crash as the interval mismatch.</td></tr>
+  <tr><td>Cumulative minutes, CUDA vs ArcGIS lines</td><td>0 mismatches in 84,686 lines. Maximum difference: 1.8e-15 min.</td></tr>
+  <tr><td>Reached intervals, CUDA vs ArcGIS lines</td><td>0 mismatches in 97,374 interval sets. The active exports include the cutoff split described in <a href="#cutoff-investigation">section 19</a>.</td></tr>
+  <tr><td>Own snapping vs ArcGIS locations</td><td>0 cost mismatches and 0 interval mismatches. Maximum cost difference: 5.2e-11 min.</td></tr>
+  <tr><td>Polygon gate (shared builder)</td><td>300 of 300 pass in each location mode.</td></tr>
   <tr><td>Native ArcGIS polygons (reference only)</td><td>Median IoU 0.962 (1 min), 0.975 (5 min), 0.986 (10 min).</td></tr>
   <tr><td>Batch time, 100 crashes</td><td>ArcGIS solve 69.3 s. CUDA shortest paths 0.08 s, reached intervals 0.11 s, polygons 4.35 s.</td></tr>
   <tr><td>Live server, p50</td><td>3.7 ms (1 min), 18.9 ms (5 min), 67.6 ms (10 min).</td></tr>
 </table>
 <p>
-These results describe the original Adams network.
+The gate results above describe the current fixed-network exports.
+The timing rows retain earlier benchmark measurements from the original network.
 On 14 November 2026, a geometry repair and a network rebuild reproduced the same mismatch.
 A separate test split the affected edge at the calculated 5-minute position.
 That test passed both gates for the same 100 crashes.
-The original network remains unchanged by the split test.
+The original network was preserved during the split test.
+The fixed network was later activated on Windows and exported to the GPU and browser datasets.
 See <a href="#cutoff-investigation">section 19</a> for the procedure, evidence, and limits.
 </p>
 
@@ -124,6 +128,8 @@ See <a href="#cutoff-investigation">section 19</a> for the procedure, evidence, 
 <p>
 The result has 5,035 edges, 4,357 nodes, and 22 components.
 The largest component holds 98.7% of the nodes.
+These counts describe preparation before the manual cutoff split.
+The current exports contain the additional child edge and junction from section 19.
 </p>
 
 <p align="center">
@@ -523,11 +529,11 @@ The <b>Engine</b> control in the panel selects Server, Client, or Both.
 
 <h3>14.2 Data (<code>client/build_client_data.py</code>)</h3>
 <ul>
-  <li>The script writes <code>web/data/adams.bin</code> (20.9 MB) and <code>web/data/adams.json</code>. Git ignores <code>web/data/</code>.</li>
+  <li>The script writes <code>web/data/adams.bin</code> (23.9 MB) and <code>web/data/adams.json</code>. Git ignores <code>web/data/</code>.</li>
   <li>Graph arrays: CSR, edge ends, edge minutes (Float64).</li>
   <li>Snap geometry: street vertices in Web Mercator, with the position along the edge from EPSG:3735 lengths.</li>
   <li>Mesh: street quads, round-join wedges, node disks, and face triangles. The script offsets all vertices by the trim distance in EPSG:3735. Then it projects them to Web Mercator.</li>
-  <li>The mesh has 664,363 vertices and 277,153 triangles.</li>
+  <li>The current mesh has 664,374 vertices and 277,158 triangles.</li>
 </ul>
 
 <h3>14.3 Snap</h3>
@@ -538,11 +544,11 @@ The <b>Engine</b> control in the panel selects Server, Client, or Both.
 </ul>
 
 <h3>14.4 Results</h3>
-<p>Regenerate client fixtures for the default 100 crashes, then run <code>node tests/test_client.mjs</code> for CUDA agreement and seven warmed timing passes. Run <code>node tests/test_client_arcpy.mjs</code> for an independent ArcPy line gate. The known unsplit crossing remains a failure. The browser pixel check now reports PASS only at IoU ≥ 0.99; an empty selection or lower IoU reports ERROR.</p>
+<p>Regenerate client fixtures for the default 100 crashes. Run <code>node tests/test_client.mjs</code> for CUDA agreement and seven warmed timing passes. Run <code>node tests/test_client_arcpy.mjs</code> for an independent ArcPy line gate. Both tests pass on the updated fixed-network fixtures. The archived original fixture retains its known unsplit crossing. The browser pixel check reports PASS only at IoU ≥ 0.99; an empty selection or lower IoU reports ERROR.</p>
 <table>
   <tr><th>Check</th><th>Result</th></tr>
-  <tr><td>Node costs, client vs CUDA (20 crashes)</td><td>Maximum difference: 0 min.</td></tr>
-  <tr><td>Full edges, node disks, filled faces vs <code>Builder.classify</code> (20 crashes, 3 breaks)</td><td>Equal.</td></tr>
+  <tr><td>Node costs, client vs CUDA (100 crashes)</td><td>Maximum difference: 0 min.</td></tr>
+  <tr><td>Full edges, node disks, filled faces vs <code>Builder.classify</code> (100 crashes, 3 breaks)</td><td>Equal.</td></tr>
   <tr><td>Snapped position vs <code>Graph.locate</code></td><td>Same edge. Maximum position difference: 5.7e-7.</td></tr>
   <tr><td>Client raster vs server polygon (6 crashes, 3 breaks, 2048 px)</td><td>IoU 0.9955 to 0.9997.</td></tr>
   <tr><td>Time per mouse position (Node, mean)</td><td>Snap 0.003 ms, solve 0.031 ms (10 min), flags 0.040 ms.</td></tr>
@@ -556,7 +562,7 @@ The client draws the full union at these locations.
 <h3>14.5 Limits of the client engine</h3>
 <ul>
   <li>The client engine gives a picture, not polygon geometry. Use the server engine when geometry is necessary.</li>
-  <li>The browser downloads 20.9 MB of data one time (it includes the EPSG:3735 geometry for browser polygons).</li>
+  <li>The browser downloads 23.9 MB of data one time (it includes the EPSG:3735 geometry for browser polygons).</li>
   <li>The time values are from Node on the Mac. The frame rate in the browser is not measured.</li>
   <li>The layer does not draw world copies across the date line.</li>
 </ul>
@@ -1120,4 +1126,102 @@ The production network and client data were not replaced.
 The deferred failure must remain visible in baseline reports.
 Do not widen tolerances to hide it.
 Do not report the split-network pass as a pass for the original network.
+</p>
+
+<h3 id="cutoff-activation">19.12 Fixed network activation on Windows</h3>
+<p>
+After the split test, the user requested activation of the fixed network on both Windows targets.
+The fixed prepared network is now installed on <code>mraadmlwin</code> and <code>Pro37</code>.
+The original-network statements above describe the preserved baseline and the earlier experiments.
+They do not describe the current installed Adams geodatabases in the table below.
+</p>
+<table>
+  <tr><th>Target</th><th>Installed network dataset</th><th>Original network preservation</th></tr>
+  <tr><td><code>mraadmlwin</code></td><td><code>C:\Users\mraad\service-area\work\Adams.gdb\Net\Streets_ND</code></td><td>The original Adams geodatabase has a verified backup and a retained original copy.</td></tr>
+  <tr><td><code>Pro37</code></td><td><code>C:\Ohio\Adams.gdb\Net\Streets_ND</code></td><td>The user selected a separate Adams geodatabase. Both statewide OhioNetwork geodatabases remain unchanged and have verified backups.</td></tr>
+</table>
+<p>
+Each backup data file passed a SHA-256 check before activation.
+Both installed networks have 5,036 edges and 2,483 crashes.
+Their street geometry and cost fingerprints match the verified split source.
+Their crash geometry fingerprints also match.
+</p>
+<p>
+A native ArcGIS solve checked crash 1800 at the staged path and at each final installed path.
+The long child ended at 4.999999999999991 minutes on both machines.
+The tail remained a separate edge that ended at 5.000032509772196 minutes.
+Both installed-path cutoff checks passed.
+The complete 100-crash gate was not rerun during activation.
+</p>
+<p>
+The first activation attempt on <code>mraadmlwin</code> encountered an ArcGIS file lock.
+The procedure restored the original network automatically.
+The successful procedure ran validation in separate processes to release locks before the file move.
+The activation record retains the backup paths and rollback procedure.
+</p>
+<p>
+The source <code>OhioTGN.gdb</code> was not changed by activation.
+Running <code>prep/01_prepare.py Adams</code> again will recreate the unsplit network from that source.
+The exported Parquet files, GPU datasets, and browser data were not promoted.
+They remain separate versions of the network.
+Rebuild client data after a later change to its exported edge table.
+</p>
+<p>
+See <a href="results/adams_network_activation_20261114.md">the activation and rollback record</a>
+and <a href="results/adams_network_activation_20261114.json">the activation summary</a>
+for exact backup locations, installed fingerprints, and validation results.
+</p>
+
+<h3 id="cutoff-export-update">19.13 Fixed-network exports update</h3>
+<p>
+The user selected live/browser data and 100-crash validation exports.
+The export update is complete on <code>mraadmlwin</code>, <code>Pro37</code>, <code>gc5</code>, and the Mac repository.
+It supersedes the earlier export-version limit in section 19.12.
+The original full-run outputs remain archived.
+No new full 2,483-crash ArcGIS solve was requested.
+</p>
+<p>
+A fresh ArcGIS solve used a copy of the installed fixed network on <code>mraadmlwin</code>.
+The solve used the same 100 crashes and seed 7.
+Pro37 received verified copies of these matching exports.
+It did not repeat the sample solve.
+</p>
+<table>
+  <tr><th>Output</th><th>Current content</th></tr>
+  <tr><td>Live graph</td><td>5,036 edges and 4,358 nodes</td></tr>
+  <tr><td>Live crash sites</td><td>All 2,483 crashes</td></tr>
+  <tr><td>Validation sample</td><td>100 located facilities, 84,686 ArcGIS line pieces, 300 native polygons</td></tr>
+  <tr><td>CUDA gate, Esri locations</td><td>0 cost mismatches, 0 interval mismatches, 300/300 shared-builder polygons passing</td></tr>
+  <tr><td>CUDA gate, own locations</td><td>0 cost mismatches, 0 interval mismatches, 300/300 shared-builder polygons passing</td></tr>
+  <tr><td>Browser engine vs CUDA</td><td>100 crashes pass; maximum node-cost difference 0 minutes</td></tr>
+  <tr><td>Direct browser engine vs ArcPy line gate</td><td>0 cost mismatches and 0 interval mismatches</td></tr>
+  <tr><td>Browser GEOS polygon gate</td><td>300/300 comparisons pass; minimum IoU 0.998863; maximum Hausdorff distance 12.920 feet</td></tr>
+</table>
+<p>
+The browser graph hash matches the live graph hash on every target:
+<code>a267e7351820f1942db4844b0bc001e01b40d574d466eb43e3fb1794fb040b87</code>.
+The browser builder produced fresh graph arrays, mesh data, and fixtures.
+All six staged Node test scripts passed before activation.
+Installed files passed the final bundle-hash check.
+</p>
+<table>
+  <tr><th>Host</th><th>Live graph</th><th>Validation sample</th><th>Browser data</th></tr>
+  <tr><td><code>mraadmlwin</code></td><td><code>service-area\work\Adams</code></td><td><code>service-area\work\Adams_s100</code></td><td><code>service-area\web\data</code></td></tr>
+  <tr><td><code>Pro37</code></td><td><code>C:\Ohio\exports\Adams</code></td><td><code>C:\Ohio\exports\Adams_s100</code></td><td><code>C:\Ohio\exports\web\data</code></td></tr>
+  <tr><td><code>gc5</code></td><td><code>~/service-area/work/Adams</code></td><td><code>~/service-area/work/Adams_s100</code></td><td><code>~/service-area/web/data</code></td></tr>
+  <tr><td>Mac repository</td><td><code>work/Adams</code></td><td><code>work/Adams_s100</code></td><td><code>web/data</code></td></tr>
+</table>
+<p>
+The active live folder contains the graph and crash sites only.
+It does not contain reference files from the old full solve.
+The current 100-crash reference and CUDA outputs are together in the validation sample folder.
+Previous data directories and report files are preserved in the export activation backups.
+</p>
+<p>
+See <a href="results/adams_exports_update_20261114.md">the export update and rollback record</a>
+and <a href="results/adams_exports_update_20261114.json">the export update summary</a>.
+The current gate reports are <a href="results/parity_adams_s100_esri.md">Esri locations</a>
+and <a href="results/parity_adams_s100_own.md">own locations</a>.
+The full-county results were not reassessed.
+No server or tunnel was started by this update.
 </p>
